@@ -1,38 +1,13 @@
-const colors = [
-    {
-        "id": "color-yellow",
-        "colorHeader": "#FFEFBE",
-        "colorBody": "#FFF5DF",
-        "colorText": "#18181A"
-    },
-    {
-        "id": "color-green",
-        "colorHeader": "#AFDA9F",
-        "colorBody": "#BCDEAF",
-        "colorText": "#18181A"
-    },
-    {
-        "id": "color-blue",
-        "colorHeader": "#9BD1DE",
-        "colorBody": "#A6DCE9",
-        "colorText": "#18181A"
-    },
-    {
-        "id": "color-purple",
-        "colorHeader": "#FED0FD",
-        "colorBody": "#FEE5FD",
-        "colorText": "#18181A"
-    }
-]
-
 import Plus from "../icons/Plus";
 import { useRef } from "react";
-import { useContext } from "react";
-import { NoteContext } from "../context/NoteContext";
+import { useNotes } from "../context/NoteContext";
+import { db } from "../appwrite/database";
+import { Note } from "../helper/type";
+import { colors } from "../helper/constant";
 
 const AddButton = () => {
     const startingPos = useRef(10);
-    const { setNotes } = useContext(NoteContext);
+    const { setNotes, user } = useNotes();
 
     const addNote = async () => {
         const payload = {
@@ -41,12 +16,13 @@ const AddButton = () => {
                 y: startingPos.current,
             }),
             colors: JSON.stringify(colors[0]),
+            user_id: user!.$id,
         };
 
         startingPos.current += 10;
-
-        console.log("Add note with payload: ", payload);
-        setNotes((prevState) => [...prevState, { ...payload, $id: prevState.length + 1, body: JSON.stringify('') }]);
+        const response = await db.notes.create(payload);
+        //@ts-ignore
+        setNotes((prevState: Note[]) => [response, ...prevState]);
     };
 
     return (

@@ -16,6 +16,58 @@ body {
   margin: 0;
 }
 
+.left-header {
+  position: fixed;
+  left: 0.5em;
+  top: 1em;
+  transform: translateY(-50%);
+  background-color: #35363e;
+  padding: 0.4em;
+  border-radius: 40px;
+  box-shadow: 0 1px 1px hsl(0deg 0% 0% / 0.075),
+    0 2px 2px hsl(0deg 0% 0% / 0.075), 0 4px 4px hsl(0deg 0% 0% / 0.075),
+    0 8px 8px hsl(0deg 0% 0% / 0.075), 0 16px 16px hsl(0deg 0% 0% / 0.075);
+  z-index: 10000;
+  font-size: 2em;
+}
+
+.right-header {
+  position: fixed;
+  right: 0.5em;
+  top: 1em;
+  transform: translateY(-50%);
+  background-color: #35363e;
+  padding: 0.2em;
+  border-radius: 40px;
+  box-shadow: 0 1px 1px hsl(0deg 0% 0% / 0.075),
+    0 2px 2px hsl(0deg 0% 0% / 0.075), 0 4px 4px hsl(0deg 0% 0% / 0.075),
+    0 8px 8px hsl(0deg 0% 0% / 0.075), 0 16px 16px hsl(0deg 0% 0% / 0.075);
+  z-index: 10000;
+  font-size: 2em;
+}
+
+.logout {
+  position: fixed;
+  right: 1em;
+  bottom: 0em;
+  transform: translateY(-50%);
+  box-shadow: 0 1px 1px hsl(0deg 0% 0% / 0.075),
+    0 2px 2px hsl(0deg 0% 0% / 0.075), 0 4px 4px hsl(0deg 0% 0% / 0.075),
+    0 8px 8px hsl(0deg 0% 0% / 0.075), 0 16px 16px hsl(0deg 0% 0% / 0.075);
+  padding: 0.5em;
+  border-radius: 40px;
+  background-color: #35363e;
+  z-index: 10000;
+  font-size: 1.5em;
+  outline: none;
+  cursor: pointer;
+  border: 0;
+}
+
+.logout:hover {
+  background-color: #9bd1de;
+}
+
 #app {
   background-color: #212228;
   background-image: linear-gradient(#292a30 0.1em, transparent 0.1em),
@@ -67,7 +119,6 @@ textarea:focus {
 }
 
 :root {
-  /* ... */
   --spinner-animation-speed: 2s;
 }
 
@@ -139,4 +190,63 @@ textarea:focus {
 .color:hover {
   height: 45px;
   width: 45px;
+}
+
+.register {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #35363e;
+  border-radius: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 1px hsl(0deg 0% 0% / 0.075),
+    0 2px 2px hsl(0deg 0% 0% / 0.075), 0 4px 4px hsl(0deg 0% 0% / 0.075),
+    0 8px 8px hsl(0deg 0% 0% / 0.075), 0 16px 16px hsl(0deg 0% 0% / 0.075);
+  padding: 2em;
+}
+
+.register form div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0.5em 0;
+  text-align: left;
+}
+
+.register input {
+  width: 100%;
+  padding: 1em;
+  border-radius: 5px;
+  border: none;
+}
+
+.register span {
+  margin: 0;
+  padding: 0;
+  color: red;
+  font-size: small;
+}
+
+.register button {
+  width: 100%;
+  padding: 1em;
+  border-radius: 5px;
+  border: none;
+  background-color: rgba(107, 107, 107, 1);
+  cursor: pointer;
+}
+
+.links {
+  margin-top: 0.5em;
+  font-size: large;
+}
+
+.links a {
+  color: #9bd1de;
+  text-decoration: none;
 }

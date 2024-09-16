@@ -1,0 +1,21 @@
+import { Client, Account, Databases, ID } from 'appwrite';
+
+const client = new Client();
+
+client
+    .setEndpoint(import.meta.env.VITE_ENDPOINT)
+    .setProject(import.meta.env.VITE_PROJECT_ID)
+
+const account = new Account(client);
+
+const databases = new Databases(client);
+
+const collections = [
+    {
+        name: "notes",
+        id: import.meta.env.VITE_COLLECTION_NOTES_ID,
+        dbId: import.meta.env.VITE_DATABASE_ID
+    },
+];
+
+export { client, account, databases, ID, collections };

@@ -1,33 +1,10 @@
 import AddButton from "./AddButton";
 import { useContext } from "react";
 import { NoteContext } from "../context/NoteContext";
-
-const colors = [
-    {
-        "id": "color-yellow",
-        "colorHeader": "#FFEFBE",
-        "colorBody": "#FFF5DF",
-        "colorText": "#18181A"
-    },
-    {
-        "id": "color-green",
-        "colorHeader": "#AFDA9F",
-        "colorBody": "#BCDEAF",
-        "colorText": "#18181A"
-    },
-    {
-        "id": "color-blue",
-        "colorHeader": "#9BD1DE",
-        "colorBody": "#A6DCE9",
-        "colorText": "#18181A"
-    },
-    {
-        "id": "color-purple",
-        "colorHeader": "#FED0FD",
-        "colorBody": "#FEE5FD",
-        "colorText": "#18181A"
-    }
-]
+import { db } from "../appwrite/database";
+import { toast } from "react-hot-toast";
+import { colors } from "../helper/constant";
+import type { Color } from "../helper/type";
 
 const Controls = () => {
     return (
@@ -40,27 +17,30 @@ const Controls = () => {
     );
 };
 
-const Color = ({ color }) => {
+const Color = ({ color }: { color: Color }) => {
     const { selectedNote, setNotes, notes } = useContext(NoteContext)
 
     const changeColor = () => {
-        console.log("Selected color:", selectedNote);
+        try {
+            const currentNoteIndex = notes.findIndex(
+                (note) => note.$id === selectedNote!.$id
+            );
 
+            const updatedNote = {
+                ...notes[currentNoteIndex],
+                colors: JSON.stringify(color),
+            };
 
-        const currentNoteIndex = notes.findIndex(
-            (note) => note.$id === selectedNote.$id
-        );
+            const newNotes = [...notes];
+            newNotes[currentNoteIndex] = updatedNote;
+            setNotes(newNotes);
 
-        const updatedNote = {
-            ...notes[currentNoteIndex],
-            colors: JSON.stringify(color),
-        };
-
-        const newNotes = [...notes];
-        newNotes[currentNoteIndex] = updatedNote;
-        setNotes(newNotes);
-
-
+            db.notes.update(selectedNote!.$id, {
+                colors: JSON.stringify(color),
+            });
+        } catch {
+            toast.error("Please select a note to change its color");
+        }
     };
 
     return (

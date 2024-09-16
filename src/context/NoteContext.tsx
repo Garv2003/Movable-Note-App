@@ -1,67 +1,50 @@
-import { createContext } from "react";
-import { useState, useEffect } from "react";
-import Spinner from "../icons/Spinner";
+import { createContext, useState, useEffect, useContext, ReactNode } from "react";
+import { Spinner } from "../icons";
+import { getUser } from "../appwrite/auth";
+import { useNavigate } from "react-router-dom";
+import { db } from "../appwrite/database";
+import { Note, User, DocumentsResponse, NoteContextType } from "../helper/type";
 
-export const fakeData = [
-    {
-        $id: 1,
-        body: JSON.stringify(
-            'Resources:\n- Book: "You Don\'t Know JS: Scope & Closures" by Kyle Simpson.\n\n- Online Course: "JavaScript Patterns" on Udemy.\n\n- Articles:\n"Understanding JavaScript Closures" on Medium.\n\n"Mastering JavaScript Modules" on Dev.to.'
-        ),
-        colors: JSON.stringify({
-            id: "color-purple",
-            colorHeader: "#FED0FD",
-            colorBody: "#FEE5FD",
-            colorText: "#18181A",
-        }),
-        position: JSON.stringify({ x: 505, y: 10 }),
-    },
-    {
-        $id: 2,
-        body: JSON.stringify(
-            'Resources:\n- Book: "You Don\'t Know JS: Scope & Closures" by Kyle Simpson.\n\n- Online Course: "JavaScript Patterns" on Udemy.\n\n- Articles:\n"Understanding JavaScript Closures" on Medium.\n\n"Mastering JavaScript Modules" on Dev.to.'
-        ),
-        colors: JSON.stringify({
-            id: "color-blue",
-            colorHeader: "#9BD1DE",
-            colorBody: "#A6DCE9",
-            colorText: "#18181A",
-        }),
-        position: JSON.stringify({ x: 305, y: 110 }),
-    },
-    {
-        $id: 3,
-        body: JSON.stringify(
-            'Resources:\n- Book: "You Don\'t Know JS: Scope & Closures" by Kyle Simpson.\n\n- Online Course: "JavaScript Patterns" on Udemy.\n\n- Articles:\n"Understanding JavaScript Closures" on Medium.\n\n"Mastering JavaScript Modules" on Dev.to.'
-        ),
-        colors: JSON.stringify({
-            id: "color-yellow",
-            colorHeader: "#FFEFBE",
-            colorBody: "#FFF5DF",
-            colorText: "#18181A",
-        }),
-        position: JSON.stringify({ x: 605, y: 500 }),
-    },
-];
+const defaultContext: NoteContextType = {
+    notes: [],
+    setNotes: () => { },
+    selectedNote: null,
+    setSelectedNote: () => { },
+    user: null,
+    setUser: () => { },
+};
 
+export const NoteContext = createContext<NoteContextType>(defaultContext);
 
-export const NoteContext = createContext();
-
-const NotesProvider = ({ children }: { children: React.ReactNode }) => {
+const NotesProvider = ({ children }: { children: ReactNode }) => {
     const [loading, setLoading] = useState(true);
-    const [notes, setNotes] = useState(fakeData);
-    const [selectedNote, setSelectedNote] = useState(null);
+    const [user, setUser] = useState<User | null>(null);
+    const [notes, setNotes] = useState<Note[]>([]);
+    const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         init();
     }, []);
 
     const init = async () => {
-        setNotes(fakeData);
-        setLoading(false);
+        try {
+            const currentUser = await getUser();
+            if (!currentUser) {
+                navigate("/login");
+                return;
+            }
+            setUser(currentUser);
+            const response: DocumentsResponse = await db.notes.list(currentUser.$id);
+            setNotes(response.documents);
+            setLoading(false);
+        } catch (error) {
+            console.error(error);
+            navigate("/login");
+        }
     };
 
-    const contextData = { notes, setNotes, selectedNote, setSelectedNote };
+    const contextData: NoteContextType = { notes, setNotes, selectedNote, setSelectedNote, user, setUser };
 
     return (
         <NoteContext.Provider value={contextData}>
@@ -82,4 +65,13 @@ const NotesProvider = ({ children }: { children: React.ReactNode }) => {
         </NoteContext.Provider>
     );
 };
+
+export const useNotes = () => {
+    const context = useContext(NoteContext);
+    if (context === undefined) {
+        throw new Error("useNotes must be used within a NotesProvider");
+    }
+    return context;
+}
+
 export default NotesProvider;
